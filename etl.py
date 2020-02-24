@@ -6,6 +6,15 @@ from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, dat
 from datetime import datetime
 from pyspark.sql import Window
 
+      
+def create_spark_session():
+    spark = SparkSession \
+        .builder \
+        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
+        .getOrCreate()
+    return spark
+
+
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
     song_data = input_data + 'song_data/*/*/*/*.json'
@@ -132,14 +141,6 @@ def process_log_data(spark, input_data, output_data):
         .partitionBy('year', 'month') \
         .option("path", songplays_output) \
         .saveAsTable('songplays', format='parquet') 
-    
-    
-def create_spark_session():
-    spark = SparkSession \
-        .builder \
-        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
-        .getOrCreate()
-    return spark
 
 
 def main():
