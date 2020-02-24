@@ -1,7 +1,9 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.types as t
 import pyspark.sql.functions as f
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format, dayofweek
+
 
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
@@ -84,6 +86,19 @@ def process_log_data(spark, input_data, output_data):
         .write \
         .option("path", users_output) \
         .saveAsTable('users', format='parquet')
+    
+    # create timestamp column from original timestamp column
+    df = df \
+        .withColumn('timestamp', f.from_utc_timestamp((df.ts/1000.0).cast('timestamp'), 'UTC'))
+    
+    # create datetime column from original timestamp column
+    get_datetime = udf(lambda ts: datetime.fromtimestamp(ts/1000.0), t.TimestampType())
+    df = df.withColumn('datetime', get_datetime('ts'))
+    
+    # extract columns to create time table
+    time_table = df \
+        .select([col('datetime').alias('start_time'), dayofmonth(col('datetime')).alias('day'), weekofyear(col('datetime')).alias('week'), month(col('datetime')).alias('month'), year(col('datetime')).alias('year'), dayofweek(col('datetime')).alias('weekday')]) \
+        .dropDuplicates()
     
     
 def create_spark_session():
