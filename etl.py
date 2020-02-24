@@ -24,6 +24,11 @@ def process_song_data(spark, input_data, output_data):
         .read \
         .json(song_data, song_schema)
     
+    # extract columns to create songs table
+    songs_table = df \
+        .select(['song_id', 'title', 'artist_id', 'year', 'duration']) \
+        .dropDuplicates()
+    
     
 def create_spark_session():
     spark = SparkSession \
