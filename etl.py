@@ -29,6 +29,15 @@ def process_song_data(spark, input_data, output_data):
         .select(['song_id', 'title', 'artist_id', 'year', 'duration']) \
         .dropDuplicates()
     
+    # write songs table to parquet files partitioned by year and artist 
+    songs_output = output_data + 'songs'
+    
+    songs_table \
+        .write \
+        .partitionBy('year', 'artist_id') \
+        .option("path", songs_output) \
+        .saveAsTable('songs', format='parquet') 
+    
     
 def create_spark_session():
     spark = SparkSession \
@@ -42,7 +51,7 @@ def main():
     spark = create_spark_session()
     spark.sparkContext.setLogLevel("ERROR")
     input_data = '/home/workspace/data/more/'
-    output_data = 'output/'
+    output_data = '/home/workspace/output/'
     
     process_song_data(spark, input_data, output_data)    
 
