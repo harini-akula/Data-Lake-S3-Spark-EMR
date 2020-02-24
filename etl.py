@@ -77,6 +77,14 @@ def process_log_data(spark, input_data, output_data):
         .select([df.userId.cast(t.IntegerType()).alias('user_id'), col('firstName').alias('first_name'), col('lastName').alias('last_name'), 'gender', 'level']) \
         .dropDuplicates()
     
+    # write users table to parquet files
+    users_output = output_data + 'users'
+    
+    users_table \
+        .write \
+        .option("path", users_output) \
+        .saveAsTable('users', format='parquet')
+    
     
 def create_spark_session():
     spark = SparkSession \
@@ -92,7 +100,7 @@ def main():
     input_data = '/home/workspace/data/more/'
     output_data = '/home/workspace/output/'
     
-    #process_song_data(spark, input_data, output_data)    
+    process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
 
 if __name__ == "__main__":
