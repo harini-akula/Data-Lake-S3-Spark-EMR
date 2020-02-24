@@ -3,7 +3,7 @@ import pyspark.sql.types as t
 import pyspark.sql.functions as f
 from pyspark.sql.functions import col, udf
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format, dayofweek
-
+from datetime import datetime
 
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
@@ -99,6 +99,15 @@ def process_log_data(spark, input_data, output_data):
     time_table = df \
         .select([col('datetime').alias('start_time'), dayofmonth(col('datetime')).alias('day'), weekofyear(col('datetime')).alias('week'), month(col('datetime')).alias('month'), year(col('datetime')).alias('year'), dayofweek(col('datetime')).alias('weekday')]) \
         .dropDuplicates()
+    
+    # write time table to parquet files partitioned by year and month
+    time_output = output_data + 'time'
+    
+    time_table \
+        .write \
+        .partitionBy('year', 'month') \
+        .option("path", time_output) \
+        .saveAsTable('time', format='parquet') 
     
     
 def create_spark_session():
