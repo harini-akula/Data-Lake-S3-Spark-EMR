@@ -123,6 +123,16 @@ def process_log_data(spark, input_data, output_data):
     w = Window().orderBy(f.lit('A'))
     songplays_table = songplays_df.withColumn('songplay_id', f.row_number().over(w))
     
+    # write songplays table to parquet files partitioned by year and month
+    songplays_output = output_data + 'songplays'
+    
+    songplays_table \
+        .select(['songplay_id', 'start_time', 'user_id', 'level', 'song_id', 'artist_id', 'session_id', 'location', 'user_agent', 'year', 'month'])\
+        .write \
+        .partitionBy('year', 'month') \
+        .option("path", songplays_output) \
+        .saveAsTable('songplays', format='parquet') 
+    
     
 def create_spark_session():
     spark = SparkSession \
