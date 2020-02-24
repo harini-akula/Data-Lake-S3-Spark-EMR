@@ -4,6 +4,7 @@ import pyspark.sql.functions as f
 from pyspark.sql.functions import col, udf
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format, dayofweek
 from datetime import datetime
+from pyspark.sql import Window
 
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
@@ -108,6 +109,19 @@ def process_log_data(spark, input_data, output_data):
         .partitionBy('year', 'month') \
         .option("path", time_output) \
         .saveAsTable('time', format='parquet') 
+    
+    # read in song data to use for songplays table
+    song_data = input_data + 'song_data/*/*/*/*.json'
+    song_df = spark.read.json(song_data) 
+    
+    # join and extract columns from song and log datasets to create songplays table 
+    cond = [df.artist == song_df.artist_name, df.song == song_df.title, df.length == song_df.duration]
+    songplays_df = df.join(song_df, cond, 'left')    
+    
+    songplays_df = songplays_df \
+        .select(df.datetime.alias('start_time'), df.userId.alias('user_id'), df.level.alias('level'), song_df.song_id.alias('song_id'), song_df.artist_id.alias('artist_id'), df.sessionId.alias('session_id'), df.location.alias('location'), df.userAgent.alias('user_agent'), year(df.datetime).alias('year'), month(df.datetime).alias('month'))   
+    w = Window().orderBy(f.lit('A'))
+    songplays_table = songplays_df.withColumn('songplay_id', f.row_number().over(w))
     
     
 def create_spark_session():
