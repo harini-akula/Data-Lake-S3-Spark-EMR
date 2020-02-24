@@ -38,6 +38,11 @@ def process_song_data(spark, input_data, output_data):
         .option("path", songs_output) \
         .saveAsTable('songs', format='parquet') 
     
+    # extract columns to create artists table
+    artists_table = df \
+        .select(['artist_id', 'artist_name', 'artist_location', 'artist_longitude', 'artist_latitude']) \
+        .dropDuplicates()
+    
     
 def create_spark_session():
     spark = SparkSession \
