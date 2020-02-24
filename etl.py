@@ -43,6 +43,14 @@ def process_song_data(spark, input_data, output_data):
         .select(['artist_id', 'artist_name', 'artist_location', 'artist_longitude', 'artist_latitude']) \
         .dropDuplicates()
     
+    # write artists table to parquet files
+    artists_output = output_data + 'artists'
+    
+    artists_table \
+        .write \
+        .option("path", artists_output) \
+        .saveAsTable('artists', format='parquet')
+    
     
 def create_spark_session():
     spark = SparkSession \
