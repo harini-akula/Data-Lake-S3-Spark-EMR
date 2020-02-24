@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.types as t
+import pyspark.sql.functions as f
+from pyspark.sql.functions import col
 
 def process_song_data(spark, input_data, output_data):
     # get filepath to song data file
@@ -53,12 +55,27 @@ def process_song_data(spark, input_data, output_data):
     
 def process_log_data(spark, input_data, output_data):
     # get filepath to log data file
-    log_data = '/home/workspace/data/more/*.json'
+    log_data = input_data + '*.json'
 
     # read log data file
     df = spark \
         .read \
         .json(log_data)
+        
+    # filter by actions for song plays
+    df = df \
+        .filter('page = "NextSong"')
+
+    # group by userId for unique users    
+    users_list = df \
+        .groupBy('userId') \
+        .agg(f.max('ts').alias('ts'))
+    
+    # extract columns to create users table
+    users_table = df \
+        .join(users_list, ['userId', 'ts'], 'inner') \
+        .select([df.userId.cast(t.IntegerType()).alias('user_id'), col('firstName').alias('first_name'), col('lastName').alias('last_name'), 'gender', 'level']) \
+        .dropDuplicates()
     
     
 def create_spark_session():
@@ -75,7 +92,7 @@ def main():
     input_data = '/home/workspace/data/more/'
     output_data = '/home/workspace/output/'
     
-    process_song_data(spark, input_data, output_data)    
+    #process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
 
 if __name__ == "__main__":
