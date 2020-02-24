@@ -51,6 +51,15 @@ def process_song_data(spark, input_data, output_data):
         .option("path", artists_output) \
         .saveAsTable('artists', format='parquet')
     
+def process_log_data(spark, input_data, output_data):
+    # get filepath to log data file
+    log_data = '/home/workspace/data/more/*.json'
+
+    # read log data file
+    df = spark \
+        .read \
+        .json(log_data)
+    
     
 def create_spark_session():
     spark = SparkSession \
@@ -67,7 +76,7 @@ def main():
     output_data = '/home/workspace/output/'
     
     process_song_data(spark, input_data, output_data)    
-
+    process_log_data(spark, input_data, output_data)
 
 if __name__ == "__main__":
     main()
