@@ -39,7 +39,7 @@ def process_song_data(spark, input_data, output_data):
         None. 
     """    
     # get filepath to song data file
-    song_data = input_data + 'song_data/*/*/*/*.json'
+    song_data = input_data + 'song-data/A/B/B'
     
     # define schema for song data file
     song_schema = t.StructType([
@@ -58,7 +58,9 @@ def process_song_data(spark, input_data, output_data):
     # read song data file using schema
     df = spark \
         .read \
-        .json(song_data, song_schema)
+        .format("json") \
+        .schema(song_schema) \
+        .load(song_data)
     
     # extract columns to create songs table
     songs_table = df \
