@@ -192,7 +192,7 @@ def main():
     """
     spark = create_spark_session()
     spark.sparkContext.setLogLevel("ERROR")
-    input_data = '/home/workspace/data/more/'
+    input_data = 's3a://udacity-dend/'
     output_data = '/home/workspace/output/'
     
     process_song_data(spark, input_data, output_data)    
