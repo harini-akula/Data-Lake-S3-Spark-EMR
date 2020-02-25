@@ -8,6 +8,15 @@ from pyspark.sql import Window
 
       
 def create_spark_session():
+    """
+    Description: This function can be used to create SparkSession object.
+
+    Arguments:
+        None. 
+
+    Returns:
+        spark: SparkSession object. 
+    """
     spark = SparkSession \
         .builder \
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -16,6 +25,19 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
+    """
+    Description: This function can be used to process song-data files from the 
+    given input path and transform the data from json files into songs and artists 
+    spark tables and writing these tables to the given output path as parquet tables.
+
+    Arguments:
+        spark: SparkSession object. 
+        input_data: Path to the input JSON files. 
+        output_data: Path to the output directory that stores output parquet tables.
+
+    Returns:
+        None. 
+    """    
     # get filepath to song data file
     song_data = input_data + 'song_data/*/*/*/*.json'
     
@@ -66,6 +88,19 @@ def process_song_data(spark, input_data, output_data):
         .saveAsTable('artists', format='parquet')
     
 def process_log_data(spark, input_data, output_data):
+    """
+    Description: This function can be used to process log-data files from the 
+    given input path and transform the data from json files into users, time and songplays  
+    spark tables and writing these tables to the given output path as parquet tables.
+
+    Arguments:
+        spark: SparkSession object. 
+        input_data: Path to the input JSON files. 
+        output_data: Path to the output directory that stores output parquet tables.
+
+    Returns:
+        None. 
+    """  
     # get filepath to log data file
     log_data = input_data + '*.json'
 
@@ -144,6 +179,17 @@ def process_log_data(spark, input_data, output_data):
 
 
 def main():
+    """
+    Description: This function can be used to load data from json files in AWS S3
+    and process and transform the data into spark analytics tables and write them 
+    back into S3.
+
+    Arguments:
+        None. 
+
+    Returns:
+        None. 
+    """
     spark = create_spark_session()
     spark.sparkContext.setLogLevel("ERROR")
     input_data = '/home/workspace/data/more/'
