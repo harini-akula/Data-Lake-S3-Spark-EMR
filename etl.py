@@ -229,7 +229,7 @@ def main():
     hadoop_conf.set("fs.s3a.secret.key", config.get('CREDENTIALS', 'AWS_SECRET_ACCESS_KEY'))
     
     input_data = 's3a://udacity-dend/'
-    output_data = '/home/workspace/output/'
+    output_data = 's3a://sparkify-parquet-tables/'
     
     song_df = process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data, song_df)
