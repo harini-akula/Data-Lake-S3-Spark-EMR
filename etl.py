@@ -105,6 +105,28 @@ def process_log_data(spark, input_data, output_data):
     """  
     # get filepath to log data file
     log_data = input_data + '*.json'
+    
+    # define schema for log data file
+    log_schema = t.StructType([
+        t.StructField("artist", t.StringType(), True),
+        t.StructField("auth", t.StringType(), True),
+        t.StructField("firstName", t.StringType(), True),
+        t.StructField("gender", t.StringType(), True),
+        t.StructField("itemInSession", t.IntegerType(), True),
+        t.StructField("lastName", t.StringType(), True),
+        t.StructField("length", t.DecimalType(12, 7), True),
+        t.StructField("level", t.StringType(), True),
+        t.StructField("location", t.StringType(), True),
+        t.StructField("method", t.StringType(), True),
+        t.StructField("page", t.StringType(), True),
+        t.StructField("registration", t.DecimalType(16, 2), True),
+        t.StructField("sessionId", t.IntegerType(), True),
+        t.StructField("song", t.StringType(), True),
+        t.StructField("status", t.IntegerType(), True),
+        t.StructField("ts", t.LongType(), True),
+        t.StructField("userAgent", t.StringType(), True),
+        t.StructField("userId", t.StringType(), True)
+    ])
 
     # read log data file
     df = spark \
