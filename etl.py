@@ -36,7 +36,7 @@ def process_song_data(spark, input_data, output_data):
         output_data: Path to the output directory that stores output parquet tables.
 
     Returns:
-        None. 
+        df: Song data dataframe. 
     """    
     # get filepath to song data file
     song_data = input_data + 'song-data/A/B/*/*.json'
@@ -101,6 +101,7 @@ def process_log_data(spark, input_data, output_data, song_df):
         spark: SparkSession object. 
         input_data: Path to the input JSON files. 
         output_data: Path to the output directory that stores output parquet tables.
+        song_df: Song data dataframe.
 
     Returns:
         None. 
