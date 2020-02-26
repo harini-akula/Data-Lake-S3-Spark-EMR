@@ -89,7 +89,9 @@ def process_song_data(spark, input_data, output_data):
         .option("path", artists_output) \
         .saveAsTable('artists', format='parquet')
     
-def process_log_data(spark, input_data, output_data):
+    return df
+    
+def process_log_data(spark, input_data, output_data, song_df):
     """
     Description: This function can be used to process log-data files from the 
     given input path and transform the data from json files into users, time and songplays  
@@ -180,10 +182,6 @@ def process_log_data(spark, input_data, output_data):
         .option("path", time_output) \
         .saveAsTable('time', format='parquet') 
     
-    # read in song data to use for songplays table
-    song_data = input_data + 'song_data/*/*/*/*.json'
-    song_df = spark.read.json(song_data) 
-    
     # join and extract columns from song and log datasets to create songplays table 
     cond = [df.artist == song_df.artist_name, df.song == song_df.title, df.length == song_df.duration]
     songplays_df = df.join(song_df, cond, 'left')    
@@ -221,8 +219,8 @@ def main():
     input_data = 's3a://udacity-dend/'
     output_data = '/home/workspace/output/'
     
-    process_song_data(spark, input_data, output_data)    
-    process_log_data(spark, input_data, output_data)
+    song_df = process_song_data(spark, input_data, output_data)    
+    process_log_data(spark, input_data, output_data, song_df)
 
 if __name__ == "__main__":
     main()
