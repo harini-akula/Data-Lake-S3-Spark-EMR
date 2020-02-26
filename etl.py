@@ -39,7 +39,7 @@ def process_song_data(spark, input_data, output_data):
         None. 
     """    
     # get filepath to song data file
-    song_data = input_data + 'song-data/A/B/B'
+    song_data = input_data + 'song-data/A/B/*/*.json'
     
     # define schema for song data file
     song_schema = t.StructType([
