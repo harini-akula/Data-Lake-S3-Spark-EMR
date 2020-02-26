@@ -5,6 +5,8 @@ from pyspark.sql.functions import col, udf
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format, dayofweek
 from datetime import datetime
 from pyspark.sql import Window
+import configparser
+import os
 
       
 def create_spark_session():
@@ -217,6 +219,15 @@ def main():
     """
     spark = create_spark_session()
     spark.sparkContext.setLogLevel("ERROR")
+    
+    config = configparser.ConfigParser()
+    config.read('dl.cfg')
+    
+    hadoop_conf = spark.sparkContext._jsc.hadoopConfiguration()
+    hadoop_conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+    hadoop_conf.set("fs.s3a.access.key", config.get('CREDENTIALS', 'AWS_ACCESS_KEY_ID'))
+    hadoop_conf.set("fs.s3a.secret.key", config.get('CREDENTIALS', 'AWS_SECRET_ACCESS_KEY'))
+    
     input_data = 's3a://udacity-dend/'
     output_data = '/home/workspace/output/'
     
