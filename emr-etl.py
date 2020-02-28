@@ -226,5 +226,6 @@ def main():
     song_df = process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data, song_df)
     spark.stop()
-                                                                                                                                                                                                                                             if __name__ == "__main__":
+
+if __name__ == "__main__":
     main()
